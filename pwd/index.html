@@ -16,6 +16,7 @@
 		  const passwordElement = document.getElementById('password');
 		  const copyButton = document.getElementById('copy');
 		  const historyList = document.getElementById('history');
+		  const clearHistoryButton = document.getElementById('clearHistory');
 
 		  // 定义密码字符集
 		  const uppercaseCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -39,6 +40,16 @@
 
 		    return password;
 		  }
+		  
+		  function clearHistory() {
+		    // 获取历史记录元素
+		    const historyList = document.getElementById('history');
+		    // 删除所有历史记录元素
+		    historyList.innerHTML = '';
+		    // 从 cookie 中删除历史密码
+		    document.cookie = 'passwordHistory=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+		  }
+		  
 
 		  // 生成密码按钮的点击事件处理函数
 		  function handleGenerateButtonClick() {
@@ -70,6 +81,7 @@
 		  // 绑定事件处理函数
 		  generateButton.addEventListener('click', handleGenerateButtonClick);
 		  copyButton.addEventListener('click', handleCopyButtonClick);
+		  clearHistoryButton.addEventListener('click', clearHistory);
 
 		  // 从 cookie 中读取历史密码
 		  const cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)passwordHistory\s*=\s*([^;]*).*$)|^.*$/, "$1");
@@ -167,11 +179,14 @@
     <div>
       <button id="copy">复制密码</button>
     </div>
+    <div>
+      <button id="clearHistory">清空历史</button>
+    </div>
 	
 	<div><p id="password"></p></div>
-    
+
+    <h2>历史密码</h2>
     <div>
-      <h2>历史密码</h2>
 	  <div><ul id="history"></ul></div>
     </div>
     
