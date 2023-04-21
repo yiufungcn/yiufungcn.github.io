@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>随机密码生成器</title>
+    <script>
+		// 在DOMContentLoaded事件中执行代码，以确保页面所有元素都加载完成
+		document.addEventListener('DOMContentLoaded', () => {
+		  // 获取页面元素
+		  const lengthInput = document.getElementById('length');
+		  const uppercaseCheckbox = document.getElementById('uppercase');
+		  const lowercaseCheckbox = document.getElementById('lowercase');
+		  const numbersCheckbox = document.getElementById('numbers');
+		  const symbolsCheckbox = document.getElementById('symbols');
+		  const generateButton = document.getElementById('generate');
+		  const passwordElement = document.getElementById('password');
+		  const copyButton = document.getElementById('copy');
+		  const historyList = document.getElementById('history');
+
+		  // 定义密码字符集
+		  const uppercaseCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		  const lowercaseCharacters = 'abcdefghijklmnopqrstuvwxyz';
+		  const numberCharacters = '0123456789';
+		  const symbolCharacters = '!@#$%^&*';
+
+		  // 生成随机密码
+		  function generatePassword(length, uppercase, lowercase, numbers, symbols) {
+		    let characters = '';
+		    if (uppercase) characters += uppercaseCharacters;
+		    if (lowercase) characters += lowercaseCharacters;
+		    if (numbers) characters += numberCharacters;
+		    if (symbols) characters += symbolCharacters;
+
+		    let password = '';
+		    for (let i = 0; i < length; i++) {
+		      const randomIndex = Math.floor(Math.random() * characters.length);
+		      password += characters[randomIndex];
+		    }
+
+		    return password;
+		  }
+
+		  // 生成密码按钮的点击事件处理函数
+		  function handleGenerateButtonClick() {
+		    const length = parseInt(lengthInput.value);
+		    const uppercase = uppercaseCheckbox.checked;
+		    const lowercase = lowercaseCheckbox.checked;
+		    const numbers = numbersCheckbox.checked;
+		    const symbols = symbolsCheckbox.checked;
+
+		    const password = generatePassword(length, uppercase, lowercase, numbers, symbols);
+		    passwordElement.textContent = password;
+
+		    // 将密码保存到历史记录
+		    const li = document.createElement('li');
+		    li.textContent = password;
+		    historyList.appendChild(li);
+		  }
+
+		  // 复制密码按钮的点击事件处理函数
+		  function handleCopyButtonClick() {
+		    const textarea = document.createElement('textarea');
+		    textarea.value = passwordElement.textContent;
+		    document.body.appendChild(textarea);
+		    textarea.select();
+		    document.execCommand('copy');
+		    document.body.removeChild(textarea);
+		  }
+
+		  // 绑定事件处理函数
+		  generateButton.addEventListener('click', handleGenerateButtonClick);
+		  copyButton.addEventListener('click', handleCopyButtonClick);
+
+		  // 从 cookie 中读取历史密码
+		  const cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)passwordHistory\s*=\s*([^;]*).*$)|^.*$/, "$1");
+		  if (cookieValue) {
+		    const passwords = cookieValue.split(',');
+		    passwords.forEach(password => {
+		      const li = document.createElement('li');
+		      li.textContent = password;
+		      historyList.appendChild(li);
+		    });
+		  }
+
+		  // 监听历史记录变化，将历史密码保存到 cookie 中
+		  historyList.addEventListener('DOMNodeInserted', () => {
+		    const passwords = Array.from(historyList.children).map(li => li.textContent);
+		    document.cookie = `passwordHistory=${passwords.join(',')}; max-age=${60*60*24*7}`;
+		  });
+		});
+		
+    </script>
+	<style>
+		body {
+		  display: flex;
+		  flex-direction: column;
+		  align-items: center;
+		  justify-content: center;
+		  height: 100vh;
+		}
+
+		div {
+		  display: flex;
+		  flex-direction: row;
+		  align-items: center;
+		  justify-content: center;
+		  margin: 10px 0;
+		}
+
+		label {
+		  margin-right: 10px;
+		}
+
+		button {
+		  margin: 10px;
+		  padding: 10px;
+		  font-size: 16px;
+		}
+
+		p {
+		  font-size: 24px;
+		  margin: 10px;
+		}
+
+		ul {
+		  list-style: none;
+		  margin: 10px;
+		  padding: 0;
+		}
+
+		li {
+		  margin-bottom: 5px;
+		}
+		
+	</style>
+  </head>
+  <body>
+    <h1>随机密码生成器</h1>
+    
+    <div>
+      <label for="length">密码长度：</label>
+      <input type="number" id="length" name="length" min="1" max="50" value="16">
+    </div>
+    
+    <div>
+      <input type="checkbox" id="uppercase" name="uppercase" checked>
+      <label for="uppercase">包含大写字母</label>
+    </div>
+    
+    <div>
+      <input type="checkbox" id="lowercase" name="lowercase" checked>
+      <label for="lowercase">包含小写字母</label>
+    </div>
+    
+    <div>
+      <input type="checkbox" id="numbers" name="numbers" checked>
+      <label for="numbers">包含数字</label>
+    </div>
+    
+    <div>
+      <input type="checkbox" id="symbols" name="symbols" checked>
+      <label for="symbols">包含特殊符号</label>
+    </div>
+    
+    <button id="generate">生成密码</button>
+    
+    <div>
+      <button id="copy">复制密码</button>
+    </div>
+	
+	<div><p id="password"></p></div>
+    
+    <div>
+      <h2>历史密码</h2>
+	  <div><ul id="history"></ul></div>
+    </div>
+    
+  </body>
+</html>
