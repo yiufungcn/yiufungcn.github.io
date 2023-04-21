@@ -65,7 +65,7 @@
 		    // 将密码保存到历史记录
 		    const li = document.createElement('li');
 		    li.textContent = password;
-		    historyList.appendChild(li);
+			historyList.insertBefore(li, historyList.firstChild);
 		  }
 
 		  // 复制密码按钮的点击事件处理函数
