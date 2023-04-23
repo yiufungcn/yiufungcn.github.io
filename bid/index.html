@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bid Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            gap: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bid Generator</h1>
+        <button onclick="generateBid()">Generate Bid</button>
+        <p id="bid"></p>
+        <button onclick="copyBid()">Copy Bid</button>
+        <h2>History</h2>
+        <ul id="history"></ul>
+        <button onclick="clearBidHistory()">Clear History</button>
+    </div>
+
+    <script>
+        class BidUtilBase {
+            static getUUID() {
+                let uuid = this.generateUUID();
+                return uuid;
+            }
+
+            static generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    let r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+
+            static getTimeFlagSys() {
+                let time = new Date().getTime();
+                let timeStr = String(time);
+                return timeStr.substring(timeStr.length - 4, timeStr.length);
+            }
+
+            static getFmtUUID() {
+                let uuidStr = this.getUUID();
+                let uuidFmt = uuidStr.replace(/-/g, "");
+                return uuidFmt;
+            }
+
+            static getBid() {
+                let bidStr = null;
+                bidStr = this.getFmtUUID() + this.getTimeFlagSys();
+                return bidStr;
+            }
+        }
+
+        function generateBid() {
+            let bid = BidUtilBase.getBid();
+            document.getElementById('bid').textContent = bid;
+            saveBidToCookie(bid);
+            addToHistory(bid);
+        }
+
+        function copyBid() {
+            let bidText = document.getElementById('bid').textContent;
+            let textarea = document.createElement('textarea');
+            textarea.value = bidText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        function saveBidToCookie(bid) {
+            let now = new Date();
+            let expires = new Date(now.getTime() + (365 * 24 * 60 * 60 * 1000)); // Expires in 1 year
+            document.cookie = 'bidHistory=' + encodeURIComponent(bid) + '; expires=' + expires.toUTCString();
+        }
+
+        function addToHistory(bid) {
+            let history = document.getElementById('history');
+            let listItem = document.createElement('li');
+        listItem.textContent = bid;
+        history.prepend(listItem);
+    }
+
+    function clearBidHistory() {
+        let now = new Date();
+        let expires = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // Set expired date
+        document.cookie = 'bidHistory=; expires=' + expires.toUTCString();
+        document.getElementById('history').innerHTML = '';
+    }
+
+    function getBidHistoryFromCookie() {
+        let bidHistory = [];
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let cookieArray = decodedCookie.split(';');
+
+        for (let i = 0; i < cookieArray.length; i++) {
+            let cookie = cookieArray[i].trim();
+            if (cookie.indexOf('bidHistory=') == 0) {
+                bidHistory = cookie.substring('bidHistory='.length).split(',');
+                break;
+            }
+        }
+
+        return bidHistory;
+    }
+
+    function displayBidHistory() {
+        let bidHistory = getBidHistoryFromCookie();
+        let history = document.getElementById('history');
+        history.innerHTML = '';
+
+        for (let i = 0; i < bidHistory.length; i++) {
+            let listItem = document.createElement('li');
+            listItem.textContent = bidHistory[i];
+            history.appendChild(listItem);
+        }
+    }
+
+    function saveBidToCookie(bid) {
+        let bidHistory = getBidHistoryFromCookie();
+        bidHistory.unshift(bid);
+
+        let now = new Date();
+        let expires = new Date(now.getTime() + (365 * 24 * 60 * 60 * 1000)); // Expires in 1 year
+        document.cookie = 'bidHistory=' + encodeURIComponent(bidHistory.join(',')) + '; expires=' + expires.toUTCString();
+    }
+
+    displayBidHistory();
+
+</script>
+</body>
+</html>
