@@ -5,41 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bid Generator</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            gap: 20px;
-        }
-        button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+    
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+    
+      button {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+    
+      p {
+        margin: 0;
+        font-size: 24px;
+      }
+    
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+    
+      h2 {
+        margin: 0;
+        font-size: 18px;
+      }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Bid Generator</h1>
+    
         <button onclick="generateBid()">Generate Bid</button>
-        <p id="bid"></p>
         <button onclick="copyBid()">Copy Bid</button>
+        <button onclick="clearBidHistory()">Clear History</button>
+    
+        <p id="bid"></p>
+    
         <h2>History</h2>
         <ul id="history"></ul>
-        <button onclick="clearBidHistory()">Clear History</button>
-    </div>
+      </div>
 
     <script>
         class BidUtilBase {
